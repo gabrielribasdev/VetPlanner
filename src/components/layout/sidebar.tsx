@@ -29,12 +29,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             <nav>
                 <ul>
                     <li>
-                        <Link to="/">
-                            <FaHome />
-                            <span>Início</span>
-                        </Link>
-                    </li>
-                    <li>
                         <Link to="/dashboard">
                             <FaHome />
                             <span>Dashboard</span>
@@ -66,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                         {isPacientesOpen && (
                             <ul>
                                 <li>
-                                    <Link to="/pacientes">Pacientes</Link>
+                                    <Link to="/cadastro">Cadastro</Link>
                                 </li>
                                 <li>
                                     <Link to="/vacinas">Vacinas</Link>

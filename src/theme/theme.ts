@@ -1,11 +1,11 @@
 export const lightTheme = {
     colors: {
         background: "#ffffff",
-        text: "#333333",
-        primary: "#f5fdf0",
-        secondary: "#bb86fc",
+        text: "#FFFFFF",
+        primary: "#38FF9F",
+        secondary: "#081D40",
     },
-};
+};  
 
 export const darkTheme = {
     colors: {

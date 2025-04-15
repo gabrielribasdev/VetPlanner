@@ -7,12 +7,12 @@ import Agendamentos from "../pages/agendamentos";
 import Configuracoes from "../pages/configuracoes";
 import Consultas from "../pages/consultas";
 import Historico from "../pages/historico";
-import Pacientes from "../pages/pacientes";
 import Relatorios from "../pages/relatorios";
 import Suporte from "../pages/suporte";
 import Vacinas from "../pages/vacinas";
 import Clientes from "../pages/clientes";
 import Login from "../pages/login";
+import Cadastro from "../pages/cadastro";
 
 const AppRoutes: React.FC = () => {
     return (
@@ -25,8 +25,8 @@ const AppRoutes: React.FC = () => {
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="/consultas" element={<Consultas />} />
                 <Route path="/historico" element={<Historico />} />
-                <Route path="/pacientes" element={<Pacientes />} />
-                <Route path="/pacientes" element={<Pacientes />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/pacientes" element={<Cadastro />} />
                 <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="/suporte" element={<Suporte />} />
                 <Route path="/vacinas" element={<Vacinas />} />

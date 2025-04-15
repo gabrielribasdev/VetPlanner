@@ -8,7 +8,7 @@ function App() {
         <ThemeProviderWrapper>
             <GlobalStyles />
             <AuthProvider>
-            <AppRoutes />
+                <AppRoutes />
             </AuthProvider>
         </ThemeProviderWrapper>
     );

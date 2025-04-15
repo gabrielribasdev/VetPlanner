@@ -10,7 +10,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     return (
         <HeaderContainer>
             <MenuButton onClick={toggleSidebar}>☰</MenuButton>
-            <ThemeSwitcher />
+            {/* <ThemeSwitcher /> */}
         </HeaderContainer>
     );
 };
