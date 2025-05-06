@@ -1,7 +1,5 @@
-// src/contexts/AuthContext.tsx
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, ReactNode } from 'react';
 
-// Definir tipos para o estado do usuário e funções de autenticação
 interface User {
   name: string;
   email: string;
@@ -30,7 +28,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const isAuthenticated = (): boolean => {
-    return localStorage.getItem('authToken') !== null;
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+
+    const payload = JSON.parse(atob(token.split('.')[1])); 
+
+    const expiration = payload.exp; 
+    const currentTime = Math.floor(Date.now() / 1000); 
+
+    return expiration > currentTime;
   };
 
   return (

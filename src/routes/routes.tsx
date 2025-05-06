@@ -13,6 +13,7 @@ import Vacinas from "../pages/vacinas";
 import Clientes from "../pages/clientes";
 import Login from "../pages/login";
 import Cadastro from "../pages/cadastro";
+import PrivateRoute from "./privateRoute";
 
 const AppRoutes: React.FC = () => {
     return (
@@ -20,17 +21,49 @@ const AppRoutes: React.FC = () => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/agendamentos" element={<Agendamentos />} />
-                <Route path="/configuracoes" element={<Configuracoes />} />
-                <Route path="/consultas" element={<Consultas />} />
-                <Route path="/historico" element={<Historico />} />
                 <Route path="/cadastro" element={<Cadastro />} />
-                <Route path="/pacientes" element={<Cadastro />} />
-                <Route path="/relatorios" element={<Relatorios />} />
-                <Route path="/suporte" element={<Suporte />} />
-                <Route path="/vacinas" element={<Vacinas />} />
-                <Route path="/clientes" element={<Clientes />} />
+
+                <Route
+                    path="/dashboard"
+                    element={<PrivateRoute element={<Dashboard />} />}
+                />
+                <Route
+                    path="/agendamentos"
+                    element={<PrivateRoute element={<Agendamentos />} />}
+                />
+                <Route
+                    path="/configuracoes"
+                    element={<PrivateRoute element={<Configuracoes />} />}
+                />
+                <Route
+                    path="/consultas"
+                    element={<PrivateRoute element={<Consultas />} />}
+                />
+                <Route
+                    path="/historico"
+                    element={<PrivateRoute element={<Historico />} />}
+                />
+                <Route
+                    path="/pacientes"
+                    element={<PrivateRoute element={<Cadastro />} />}
+                />
+                <Route
+                    path="/relatorios"
+                    element={<PrivateRoute element={<Relatorios />} />}
+                />
+                <Route
+                    path="/suporte"
+                    element={<PrivateRoute element={<Suporte />} />}
+                />
+                <Route
+                    path="/vacinas"
+                    element={<PrivateRoute element={<Vacinas />} />}
+                />
+                <Route
+                    path="/clientes"
+                    element={<PrivateRoute element={<Clientes />} />}
+                />
+
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>

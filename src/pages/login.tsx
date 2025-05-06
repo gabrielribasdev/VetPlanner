@@ -1,15 +1,21 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
+import { useAuth } from "../context/AuthContext"; 
 import "./Login.css";
 
 interface LoginResponse {
     success: boolean;
     message: string;
+    token?: string; 
 }
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [senha, setSenha] = useState<string>("");
     const [error, setError] = useState<string>("");
+
+    const { login } = useAuth(); 
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -19,23 +25,25 @@ const Login: React.FC = () => {
             return;
         }
 
-        setError("");
+        setError(""); 
 
         try {
-            const response = await fetch("rota", {
+            const response = await fetch("http://127.0.0.1:8000/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, senha }),
+                body: JSON.stringify({ username: email, password: senha }), 
             });
 
             const data: LoginResponse = await response.json();
 
-            if (data.success) {
+            if (data.token) {
+                login(data.token);
                 alert("Login bem-sucedido!");
+                navigate("/dashboard"); 
             } else {
-                setError(data.message);
+                setError(data.message); 
             }
         } catch (err) {
             setError("Erro ao realizar login. Tente novamente mais tarde.");
