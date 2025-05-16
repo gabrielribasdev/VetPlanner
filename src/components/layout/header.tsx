@@ -1,5 +1,4 @@
 import React from "react";
-import ThemeSwitcher from "../theme/ThemeSwitcher";
 import { HeaderContainer, MenuButton } from "../../styles/layout.style";
 
 interface HeaderProps {
@@ -10,7 +9,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     return (
         <HeaderContainer>
             <MenuButton onClick={toggleSidebar}>☰</MenuButton>
-            {/* <ThemeSwitcher /> */}
         </HeaderContainer>
     );
 };

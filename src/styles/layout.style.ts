@@ -8,8 +8,7 @@ export const LayoutContainer = styled.div`
 export const SidebarContainer = styled.aside<{ isOpen: boolean }>`
   width: ${({ isOpen }) => (isOpen ? "220px" : "60px")};
   height: 100vh;
-  background: ${({ theme }) => theme.colors.secondary};
-  color: ${({ theme }) => theme.colors.text};
+  background: ${({ theme }) => theme.colors.primary};
   padding: 10px;
   position: fixed;
   top: 60px;
@@ -38,13 +37,18 @@ export const SidebarContainer = styled.aside<{ isOpen: boolean }>`
     align-items: center;
     gap: 12px;
     text-decoration: none;
-    color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.textLight};
     font-size: 16px;
     padding: 10px;
   }
 
   nav ul li a span {
-    display: ${({ isOpen }) => (isOpen ? "inline" : "none")};
+    display: inline-block;
+    max-width: ${({ isOpen }) => (isOpen ? "150px" : "0")};
+    opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
   }
 
   nav ul li a svg {
@@ -64,12 +68,11 @@ export const Content = styled.main<{ isOpen: boolean }>`
 export const HeaderContainer = styled.header`
   width: 100%;
   height: 60px;
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.background};
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  color: ${({ theme }) => theme.colors.secondary};
   position: fixed;
   top: 0;
   left: 0;
@@ -82,7 +85,7 @@ export const MenuButton = styled.button`
   border: none;
   font-size: 26px;
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.primary};
   transition: transform 0.3s ease-in-out;
 
   &:hover {

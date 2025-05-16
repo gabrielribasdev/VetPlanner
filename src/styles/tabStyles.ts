@@ -14,7 +14,7 @@ export const TabsHeader = styled.div`
   display: flex;
   position: relative;
   border-bottom: 2px solid ${({ theme }) => theme.colors.primary};
-  background-color: ${({ theme }) => theme.colors.secondary};
+  background-color: ${({ theme }) => theme.colors.textSecondary};
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
               0 2px 4px -2px rgba(0, 0, 0, 0.1);
 `;
@@ -22,8 +22,8 @@ export const TabsHeader = styled.div`
 export const TabButton = styled.button<{ isActive: boolean }>`
   flex: 1;
   padding: 12px;
-  background-color: ${({ isActive, theme }) => (isActive ? theme.colors.background : "#0f2d5c")};
-  color: ${({ isActive, theme }) => (isActive ? theme.colors.primary : "#ffffff")};
+  background-color: ${({ isActive, theme }) => theme.colors.background};
+  color: ${({ isActive, theme }) =>  theme.colors.primary };
   border: none;
   font-weight: bold;
   border-bottom: 3px solid ${({ isActive, theme }) => (isActive ? theme.colors.primary : "transparent")};

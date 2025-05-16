@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/layout/layout";
-import {Container, Info, Item, PaginationButton, PaginationWrapper, SearchInput, Title, Wrapper,} from "../styles/lista-styles";
+import { Container, Info, Item, PaginationButton, PaginationWrapper, SearchInput, Title, Wrapper } from "../styles/lista-styles";
 
-type Cliente = {
+type Animal = {
     id: number;
     nome: string;
-    email: string;
-    telefone: string;
-    cpf: string;
-    endereco: string | null;
+    especie: string;
+    raca: string;
+    idade: number;
+    peso: number;
 };
 
-const Clientes: React.FC = () => {
-    const [clientes, setClientes] = useState<Cliente[]>([]);
+const Pacientes: React.FC = () => {
+    const [animais, setAnimais] = useState<Animal[]>([]);
     const [search, setSearch] = useState<string>("");
     const [paginaAtual, setPaginaAtual] = useState(1);
     const itensPorPagina = 5;
 
     useEffect(() => {
-        const fetchClientes = async () => {
+        const fetchAnimais = async () => {
             try {
                 const token = localStorage.getItem("authToken");
                 const response = await fetch(
-                    "http://127.0.0.1:8000/api/cadastro/tutor/listar",
+                    "http://127.0.0.1:8000/api/cadastro/animal/listar",
                     {
                         method: "GET",
                         headers: {
@@ -32,21 +32,20 @@ const Clientes: React.FC = () => {
                     }
                 );
                 const data = await response.json();
-                setClientes(data);
+                setAnimais(data);
             } catch (err) {
-                console.error("Erro ao buscar clientes", err);
+                console.error("Erro ao buscar animais", err);
             }
         };
 
-        fetchClientes();
+        fetchAnimais();
     }, []);
 
-    const clientesFiltrados = clientes.filter((cliente) => cliente.nome.toLowerCase().includes(search.toLowerCase()));
-
-    const totalPaginas = Math.ceil(clientesFiltrados.length / itensPorPagina);
+    const animaisFiltrados = animais.filter((animal) => animal.nome.toLowerCase().includes(search.toLowerCase()));
+    const totalPaginas = Math.ceil(animaisFiltrados.length / itensPorPagina);
     const indiceInicial = (paginaAtual - 1) * itensPorPagina;
     const indiceFinal = indiceInicial + itensPorPagina;
-    const clientesPaginados = clientesFiltrados.slice( indiceInicial, indiceFinal);
+    const animaisPaginados = animaisFiltrados.slice(indiceInicial, indiceFinal);
 
     const mudarPagina = (novaPagina: number) => {
         if (novaPagina >= 1 && novaPagina <= totalPaginas) {
@@ -57,7 +56,7 @@ const Clientes: React.FC = () => {
     return (
         <Layout>
             <Container>
-                <Title>Lista de Clientes</Title>
+                <Title>Lista de Pacientes</Title>
 
                 <SearchInput
                     type="text"
@@ -69,30 +68,28 @@ const Clientes: React.FC = () => {
                     }}
                 />
 
-                {clientesPaginados.length > 0 ? (
-                    clientesPaginados.map((cliente) => (
-                        <Wrapper key={cliente.id}>
+                {animaisPaginados.length > 0 ? (
+                    animaisPaginados.map((animal) => (
+                        <Wrapper key={animal.id}>
                             <Item>
-                                <h3>{cliente.nome}</h3>
+                                <h3>{animal.nome}</h3>
                                 <Info>
-                                    <strong>Email:</strong> {cliente.email}
+                                    <strong>Espécie:</strong> {animal.especie}
                                 </Info>
                                 <Info>
-                                    <strong>Telefone:</strong>{" "}
-                                    {cliente.telefone}
+                                    <strong>Raça:</strong> {animal.raca}
                                 </Info>
                                 <Info>
-                                    <strong>CPF:</strong> {cliente.cpf}
+                                    <strong>Idade:</strong> {animal.idade} anos
                                 </Info>
                                 <Info>
-                                    <strong>Endereço:</strong>{" "}
-                                    {cliente.endereco ?? "Não informado"}
+                                    <strong>Peso:</strong> {animal.peso} kg
                                 </Info>
                             </Item>
                         </Wrapper>
                     ))
                 ) : (
-                    <p>Não há clientes para exibir.</p>
+                    <p>Não há animais para exibir.</p>
                 )}
 
                 {totalPaginas > 1 && (
@@ -119,4 +116,4 @@ const Clientes: React.FC = () => {
     );
 };
 
-export default Clientes;
+export default Pacientes;

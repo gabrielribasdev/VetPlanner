@@ -10,9 +10,16 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const storedTheme = localStorage.getItem("theme") as | "light" | "dark" | null;
-    const [themeName, setThemeName] = useState<"light" | "dark">( storedTheme || "light");
+export const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
+    const storedTheme = localStorage.getItem("theme") as
+        | "light"
+        | "dark"
+        | null;
+    const [themeName, setThemeName] = useState<"light" | "dark">(
+        storedTheme || "light"
+    );
 
     useEffect(() => {
         localStorage.setItem("theme", themeName);

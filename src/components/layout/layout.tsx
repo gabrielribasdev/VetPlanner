@@ -10,10 +10,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
+    const openSidebar = () => {
+        setIsSidebarOpen(true);
+    };
+
     return (
         <LayoutContainer>
             <Header toggleSidebar={toggleSidebar} />
-            <SideMenu isOpen={isSidebarOpen} />
+            <SideMenu isOpen={isSidebarOpen} openSidebar={openSidebar} />
             <Content isOpen={isSidebarOpen}>{children}</Content>
         </LayoutContainer>
     );

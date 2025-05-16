@@ -1,25 +1,21 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "../pages/home";
 import NotFound from "../pages/notFound";
 import Dashboard from "../pages/dashboard";
 import Agendamentos from "../pages/agendamentos";
-import Configuracoes from "../pages/configuracoes";
-import Consultas from "../pages/consultas";
 import Historico from "../pages/historico";
-import Relatorios from "../pages/relatorios";
-import Suporte from "../pages/suporte";
 import Vacinas from "../pages/vacinas";
 import Clientes from "../pages/clientes";
 import Login from "../pages/login";
 import Cadastro from "../pages/cadastro";
 import PrivateRoute from "./privateRoute";
+import Pacientes from "../pages/pacientes";
 
 const AppRoutes: React.FC = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
 
@@ -32,28 +28,12 @@ const AppRoutes: React.FC = () => {
                     element={<PrivateRoute element={<Agendamentos />} />}
                 />
                 <Route
-                    path="/configuracoes"
-                    element={<PrivateRoute element={<Configuracoes />} />}
-                />
-                <Route
-                    path="/consultas"
-                    element={<PrivateRoute element={<Consultas />} />}
-                />
-                <Route
                     path="/historico"
                     element={<PrivateRoute element={<Historico />} />}
                 />
                 <Route
                     path="/pacientes"
-                    element={<PrivateRoute element={<Cadastro />} />}
-                />
-                <Route
-                    path="/relatorios"
-                    element={<PrivateRoute element={<Relatorios />} />}
-                />
-                <Route
-                    path="/suporte"
-                    element={<PrivateRoute element={<Suporte />} />}
+                    element={<PrivateRoute element={<Pacientes />} />}
                 />
                 <Route
                     path="/vacinas"

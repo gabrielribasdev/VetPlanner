@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/layout/layout";
+import {
+    BotaoSubmit,
+    FichaContainer,
+    FieldsetEstilo,
+    FormEstilo,
+    GridCampos,
+    InputEstilo,
+    LegendEstilo,
+    SelectEstilo,
+    TituloFicha,
+} from "../styles/cadastros-style";
+
+import styled, { keyframes } from "styled-components";
 
 type Servico = {
     id: number;
@@ -14,6 +27,39 @@ type Pet = {
     nome: string;
 };
 
+const toastShow = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+`;
+
+const Toast = styled.div<{ type: "success" | "error" }>`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: ${({ type }) =>
+    type === "success" ? "#4CAF50" : "#F44336"};
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  animation: ${toastShow} 3s forwards;
+  z-index: 9999;
+`;
+
 const Agendamentos: React.FC = () => {
     const [agendamento, setAgendamento] = useState({
         pet: "",
@@ -21,69 +67,81 @@ const Agendamentos: React.FC = () => {
         data: "",
         horario: "",
         preco: "",
-        observacao: ""
+        observacao: "",
     });
 
     const [servicos, setServicos] = useState<Servico[]>([]);
-    const [pets, setPets] = useState<Pet[]>([]);  // Estado para armazenar os pets
-    const [loading, setLoading] = useState(false);  // Estado para controle do spinner
+    const [pets, setPets] = useState<Pet[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     useEffect(() => {
-        // Buscar os pets
         const fetchPets = async () => {
             try {
                 const token = localStorage.getItem("authToken");
-                const response = await fetch("http://127.0.0.1:8000/api/cadastro/pet/listar", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await fetch(
+                    "http://127.0.0.1:8000/api/cadastro/pet/listar",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 const data = await response.json();
-                setPets(data);  // Preencher a lista de pets
+                setPets(data);
             } catch (err) {
                 console.error("Erro ao buscar pets", err);
             }
         };
 
-        // Buscar serviços
         const fetchServicos = async () => {
             try {
                 const token = localStorage.getItem("authToken");
-                const response = await fetch("http://127.0.0.1:8000/api/servicos/listar", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await fetch(
+                    "http://127.0.0.1:8000/api/servicos/listar",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 const data = await response.json();
-                setServicos(data);  // Preencher a lista de serviços
+                setServicos(data);
             } catch (err) {
                 console.error("Erro ao buscar serviços", err);
             }
         };
 
-        fetchPets();  // Chamar função para buscar os pets
-        fetchServicos();  // Chamar função para buscar os serviços
+        fetchPets();
+        fetchServicos();
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
 
         if (name === "servico") {
-            const servicoSelecionado = servicos.find((s) => s.id === parseInt(value));
+            const servicoSelecionado = servicos.find(
+                (s) => s.id === parseInt(value)
+            );
             setAgendamento((prev) => ({
                 ...prev,
                 servico: value,
                 preco: servicoSelecionado ? servicoSelecionado.preco : "",
-                observacao: servicoSelecionado ? servicoSelecionado.observacao : ""
+                observacao: servicoSelecionado
+                    ? servicoSelecionado.observacao
+                    : "",
             }));
         } else {
             setAgendamento({
                 ...agendamento,
-                [name]: value
+                [name]: value,
             });
         }
     };
@@ -91,66 +149,83 @@ const Agendamentos: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        setLoading(true);  // Ativa o spinner
+        setLoading(true);
 
         const agendamentoData = {
             pet: agendamento.pet,
             servico_id: parseInt(agendamento.servico),
             data: agendamento.data,
             horario: agendamento.horario,
-            preco: agendamento.preco
+            preco: agendamento.preco,
         };
 
         try {
             const token = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/agendamentos/salvar", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(agendamentoData),
-            });
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/agendamentos/salvar",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(agendamentoData),
+                }
+            );
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Agendamento realizado com sucesso:", data);
-                
-                // Limpar os campos após sucesso
+
                 setAgendamento({
                     pet: "",
                     servico: "",
                     data: "",
                     horario: "",
                     preco: "",
-                    observacao: ""
+                    observacao: "",
                 });
+
+                setToast({ message: "Agendamento realizado com sucesso!", type: "success" });
             } else {
-                console.error("Erro ao salvar agendamento:", response.statusText);
+                setToast({ message: "Erro ao salvar agendamento.", type: "error" });
+                console.error(
+                    "Erro ao salvar agendamento:",
+                    response.statusText
+                );
             }
         } catch (err) {
+            setToast({ message: "Erro na requisição.", type: "error" });
             console.error("Erro na requisição:", err);
         } finally {
-            setLoading(false);  // Desativa o spinner após a requisição
+            setLoading(false);
         }
     };
 
-    const isFormValid = Object.values(agendamento).every(value => value.trim() !== "");
+    useEffect(() => {
+        if (toast) {
+            const timer = setTimeout(() => setToast(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast]);
+
+    const isFormValid = Object.values(agendamento).every(
+        (value) => value.trim() !== ""
+    );
 
     return (
         <Layout>
-            <div style={fichaContainer}>
-                <h1 style={tituloFicha}>Ficha de Agendamento de Serviço</h1>
-                <form onSubmit={handleSubmit} style={formEstilo}>
-                    <fieldset style={fieldsetEstilo}>
-                        <legend style={legendEstilo}>Informações do Agendamento</legend>
-                        <div style={gridCampos}>
-                            <select
+            <FichaContainer>
+                <TituloFicha>Ficha de Agendamento de Serviço</TituloFicha>
+                <FormEstilo onSubmit={handleSubmit}>
+                    <FieldsetEstilo>
+                        <LegendEstilo>Informações do Agendamento</LegendEstilo>
+                        <GridCampos>
+                            <SelectEstilo
                                 name="pet"
                                 value={agendamento.pet}
                                 onChange={handleChange}
                                 required
-                                style={inputEstilo}
                             >
                                 <option value="">Selecione um Pet</option>
                                 {pets.map((pet) => (
@@ -158,13 +233,12 @@ const Agendamentos: React.FC = () => {
                                         {pet.nome}
                                     </option>
                                 ))}
-                            </select>
-                            <select
+                            </SelectEstilo>
+                            <SelectEstilo
                                 name="servico"
                                 value={agendamento.servico}
                                 onChange={handleChange}
                                 required
-                                style={inputEstilo}
                             >
                                 <option value="">Selecione um serviço</option>
                                 {servicos.map((servico) => (
@@ -172,126 +246,53 @@ const Agendamentos: React.FC = () => {
                                         {servico.nome}
                                     </option>
                                 ))}
-                            </select>
-                            <input
+                            </SelectEstilo>
+                            <InputEstilo
                                 type="date"
                                 name="data"
                                 value={agendamento.data}
                                 onChange={handleChange}
                                 required
-                                style={inputEstilo}
                             />
-                            <input
+                            <InputEstilo
                                 type="time"
                                 name="horario"
                                 value={agendamento.horario}
                                 onChange={handleChange}
                                 required
-                                style={inputEstilo}
                             />
-                            <input
+                            <InputEstilo
                                 type="text"
                                 name="preco"
                                 placeholder="Preço"
                                 value={agendamento.preco}
                                 onChange={handleChange}
                                 required
-                                style={inputEstilo}
                             />
-                            <input
+                            <InputEstilo
                                 type="text"
                                 name="observacao"
                                 placeholder="Observação"
                                 value={agendamento.observacao}
                                 onChange={handleChange}
                                 required
-                                style={inputEstilo}
                             />
-                        </div>
-                    </fieldset>
-                    <button
+                        </GridCampos>
+                    </FieldsetEstilo>
+                    <BotaoSubmit
                         type="submit"
                         disabled={!isFormValid || loading}
-                        style={submitBotao(isFormValid, loading)}
+                        isValid={isFormValid}
+                        loading={loading}
                     >
-                        {loading ? (
-                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        ) : (
-                            "Agendar"
-                        )}
-                        {loading && " Enviando..."}
-                    </button>
-                </form>
-            </div>
+                        {loading ? <div className="spinner" /> : "Agendar"}
+                    </BotaoSubmit>
+                </FormEstilo>
+
+                {toast && <Toast type={toast.type}>{toast.message}</Toast>}
+            </FichaContainer>
         </Layout>
     );
 };
-
-const fichaContainer: React.CSSProperties = {
-    maxWidth: "700px",
-    margin: "60px auto",
-    background: "#fff",
-    padding: "40px",
-    border: "2px solid #081D40",
-    borderRadius: "12px",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-    fontFamily: "Arial, sans-serif"
-};
-
-const tituloFicha: React.CSSProperties = {
-    textAlign: "center",
-    fontSize: "1.8rem",
-    marginBottom: "30px",
-    color: "#081D40",
-    borderBottom: "2px solid #38FF9F",
-    paddingBottom: "10px"
-};
-
-const formEstilo: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "24px"
-};
-
-const gridCampos: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "16px"
-};
-
-const inputEstilo: React.CSSProperties = {
-    padding: "12px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    fontSize: "1rem"
-};
-
-const fieldsetEstilo: React.CSSProperties = {
-    border: "2px dashed #38FF9F",
-    borderRadius: "8px",
-    padding: "20px"
-};
-
-const legendEstilo: React.CSSProperties = {
-    padding: "0 12px",
-    fontWeight: "bold",
-    color: "#081D40",
-    fontSize: "1.1rem"
-};
-
-const submitBotao = (isValid: boolean, loading: boolean): React.CSSProperties => ({
-    padding: "14px",
-    fontSize: "1rem",
-    backgroundColor: isValid && !loading ? "#38FF9F" : "#ccc",
-    color: "#081D40",
-    fontWeight: "bold",
-    border: "none",
-    borderRadius: "8px",
-    cursor: isValid && !loading ? "pointer" : "not-allowed",
-    transition: "background 0.3s ease-in-out",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-});
 
 export default Agendamentos;
