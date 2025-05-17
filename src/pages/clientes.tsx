@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/layout/layout";
-import {Container, Info, Item, PaginationButton, PaginationWrapper, SearchInput, Title, Wrapper,} from "../styles/lista-styles";
+import { Container, Info, Item, PaginationButton, PaginationWrapper,SearchInput, Title, Wrapper } from "../styles/lista-styles";
 
 type Cliente = {
     id: number;
@@ -41,7 +41,9 @@ const Clientes: React.FC = () => {
         fetchClientes();
     }, []);
 
-    const clientesFiltrados = clientes.filter((cliente) => cliente.nome.toLowerCase().includes(search.toLowerCase()));
+    const clientesFiltrados = clientes.filter((cliente) =>
+        cliente.nome.toLowerCase().includes(search.toLowerCase())
+    );
 
     const totalPaginas = Math.ceil(clientesFiltrados.length / itensPorPagina);
     const indiceInicial = (paginaAtual - 1) * itensPorPagina;
@@ -65,7 +67,7 @@ const Clientes: React.FC = () => {
                     value={search}
                     onChange={(e) => {
                         setSearch(e.target.value);
-                        setPaginaAtual(1); 
+                        setPaginaAtual(1);
                     }}
                 />
 

@@ -2,18 +2,14 @@ import React, { useState } from "react";
 import { TabProps, TabsProps } from "../../types/types";
 import { TabButton, TabContent, TabsBody, TabsContainer, TabsHeader } from "../../styles/tabStyles";
 
-
 const Tab: React.FC<TabProps> = ({ label, children }) => {
     return <div className="tab-content">{children}</div>;
 };
 
-
 const Tabs: React.FC<TabsProps> = ({ children, selectedTab, onChange }) => {
     const [internalActiveTab, setInternalActiveTab] = useState(0);
 
-
     const activeTab = selectedTab ?? internalActiveTab;
-
 
     const handleTabClick = (index: number) => {
         if (onChange) {
@@ -22,7 +18,6 @@ const Tabs: React.FC<TabsProps> = ({ children, selectedTab, onChange }) => {
             setInternalActiveTab(index);
         }
     };
-
 
     return (
         <TabsContainer>
@@ -39,10 +34,7 @@ const Tabs: React.FC<TabsProps> = ({ children, selectedTab, onChange }) => {
             </TabsHeader>
             <TabsBody>
                 {children.map((child: any, index: any) => (
-                    <TabContent
-                        key={index}
-                        isVisible={activeTab === index}
-                    >
+                    <TabContent key={index} isVisible={activeTab === index}>
                         {child}
                     </TabContent>
                 ))}
@@ -50,6 +42,5 @@ const Tabs: React.FC<TabsProps> = ({ children, selectedTab, onChange }) => {
         </TabsContainer>
     );
 };
-
 
 export { Tabs, Tab };

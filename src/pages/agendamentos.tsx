@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/layout/layout";
-import {
-    BotaoSubmit,
-    FichaContainer,
-    FieldsetEstilo,
-    FormEstilo,
-    GridCampos,
-    InputEstilo,
-    LegendEstilo,
-    SelectEstilo,
-    TituloFicha,
-} from "../styles/cadastros-style";
+import { BotaoSubmit, FichaContainer, FieldsetEstilo, FormEstilo, GridCampos, InputEstilo, LegendEstilo, SelectEstilo, TituloFicha } from "../styles/cadastros-style";
 
-import styled, { keyframes } from "styled-components";
+import { Toast } from "../styles/toast-style";
 
 type Servico = {
     id: number;
@@ -27,43 +17,20 @@ type Pet = {
     nome: string;
 };
 
-const toastShow = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  10% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-`;
-
-const Toast = styled.div<{ type: "success" | "error" }>`
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: ${({ type }) =>
-    type === "success" ? "#4CAF50" : "#F44336"};
-  color: white;
-  padding: 16px 24px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  animation: ${toastShow} 3s forwards;
-  z-index: 9999;
-`;
+type Vacina = {
+    id: number;
+    nome: string;
+    preco: string;
+    marca: string;
+    periodo: number;
+};
 
 const Agendamentos: React.FC = () => {
     const [agendamento, setAgendamento] = useState({
         pet: "",
         servico: "",
+        vacina: "",
+        periodo: "",
         data: "",
         horario: "",
         preco: "",
@@ -72,53 +39,55 @@ const Agendamentos: React.FC = () => {
 
     const [servicos, setServicos] = useState<Servico[]>([]);
     const [pets, setPets] = useState<Pet[]>([]);
+    const [vacinas, setVacinas] = useState<Vacina[]>([]);
     const [loading, setLoading] = useState(false);
-
-    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+    const [toast, setToast] = useState<{
+        message: string;
+        type: "success" | "error";
+    } | null>(null);
 
     useEffect(() => {
-        const fetchPets = async () => {
+        const fetchData = async () => {
             try {
                 const token = localStorage.getItem("authToken");
-                const response = await fetch(
-                    "http://127.0.0.1:8000/api/cadastro/pet/listar",
-                    {
-                        method: "GET",
+
+                const [resPets, resServicos, resVacinas] = await Promise.all([
+                    fetch("http://127.0.0.1:8000/api/cadastro/pet/listar", {
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`,
                         },
-                    }
-                );
-                const data = await response.json();
-                setPets(data);
-            } catch (err) {
-                console.error("Erro ao buscar pets", err);
-            }
-        };
-
-        const fetchServicos = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
-                const response = await fetch(
-                    "http://127.0.0.1:8000/api/servicos/listar",
-                    {
-                        method: "GET",
+                    }),
+                    fetch("http://127.0.0.1:8000/api/servicos/listar", {
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`,
                         },
-                    }
+                    }),
+                    fetch("http://127.0.0.1:8000/api/vacinas/listar", {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }),
+                ]);
+
+                if (!resPets.ok || !resServicos.ok || !resVacinas.ok)
+                    throw new Error("Erro ao buscar dados");
+
+                const [dataPets, dataServicos, dataVacinas] = await Promise.all(
+                    [resPets.json(), resServicos.json(), resVacinas.json()]
                 );
-                const data = await response.json();
-                setServicos(data);
+
+                setPets(dataPets);
+                setServicos(dataServicos);
+                setVacinas(dataVacinas);
             } catch (err) {
-                console.error("Erro ao buscar serviços", err);
+                console.error("Erro ao buscar dados:", err);
             }
         };
 
-        fetchPets();
-        fetchServicos();
+        fetchData();
     }, []);
 
     const handleChange = (
@@ -137,23 +106,39 @@ const Agendamentos: React.FC = () => {
                 observacao: servicoSelecionado
                     ? servicoSelecionado.observacao
                     : "",
+                vacina: "",
+                periodo: "",
+            }));
+        } else if (name === "vacina") {
+            const vacinaSelecionada = vacinas.find(
+                (v) => v.id === parseInt(value)
+            );
+            setAgendamento((prev) => ({
+                ...prev,
+                vacina: value,
+                preco: vacinaSelecionada ? vacinaSelecionada.preco : "",
+                periodo: vacinaSelecionada
+                    ? vacinaSelecionada.periodo.toString()
+                    : "",
             }));
         } else {
-            setAgendamento({
-                ...agendamento,
+            setAgendamento((prev) => ({
+                ...prev,
                 [name]: value,
-            });
+            }));
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         setLoading(true);
 
         const agendamentoData = {
             pet: agendamento.pet,
             servico_id: parseInt(agendamento.servico),
+            vacina_id: agendamento.vacina
+                ? parseInt(agendamento.vacina)
+                : undefined,
             data: agendamento.data,
             horario: agendamento.horario,
             preco: agendamento.preco,
@@ -173,26 +158,27 @@ const Agendamentos: React.FC = () => {
                 }
             );
 
+            console.log(JSON.stringify(agendamentoData));
             if (response.ok) {
-                const data = await response.json();
-                console.log("Agendamento realizado com sucesso:", data);
-
                 setAgendamento({
                     pet: "",
                     servico: "",
+                    vacina: "",
+                    periodo: "",
                     data: "",
                     horario: "",
                     preco: "",
                     observacao: "",
                 });
-
-                setToast({ message: "Agendamento realizado com sucesso!", type: "success" });
+                setToast({
+                    message: "Agendamento realizado com sucesso!",
+                    type: "success",
+                });
             } else {
-                setToast({ message: "Erro ao salvar agendamento.", type: "error" });
-                console.error(
-                    "Erro ao salvar agendamento:",
-                    response.statusText
-                );
+                setToast({
+                    message: "Erro ao salvar agendamento.",
+                    type: "error",
+                });
             }
         } catch (err) {
             setToast({ message: "Erro na requisição.", type: "error" });
@@ -209,8 +195,33 @@ const Agendamentos: React.FC = () => {
         }
     }, [toast]);
 
-    const isFormValid = Object.values(agendamento).every(
-        (value) => value.trim() !== ""
+    const isFormValid = () => {
+        if (
+            !agendamento.pet.trim() ||
+            !agendamento.servico.trim() ||
+            !agendamento.data.trim() ||
+            !agendamento.horario.trim() ||
+            !agendamento.preco.trim() ||
+            !agendamento.observacao.trim()
+        ) {
+            return false;
+        }
+
+        const servicoSelecionado = servicos.find(
+            (s) => s.id === parseInt(agendamento.servico)
+        );
+        if (
+            servicoSelecionado?.nome.toLowerCase() === "vacinação" &&
+            !agendamento.vacina.trim()
+        ) {
+            return false;
+        }
+
+        return true;
+    };
+
+    const servicoSelecionado = servicos.find(
+        (s) => s.id === parseInt(agendamento.servico)
     );
 
     return (
@@ -234,6 +245,7 @@ const Agendamentos: React.FC = () => {
                                     </option>
                                 ))}
                             </SelectEstilo>
+
                             <SelectEstilo
                                 name="servico"
                                 value={agendamento.servico}
@@ -247,6 +259,39 @@ const Agendamentos: React.FC = () => {
                                     </option>
                                 ))}
                             </SelectEstilo>
+
+                            {servicoSelecionado?.nome.toLowerCase() ===
+                                "vacinação" && (
+                                <>
+                                    <SelectEstilo
+                                        name="vacina"
+                                        value={agendamento.vacina}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">
+                                            Selecione uma vacina
+                                        </option>
+                                        {vacinas.map((vacina) => (
+                                            <option
+                                                key={vacina.id}
+                                                value={vacina.id}
+                                            >
+                                                {vacina.nome}
+                                            </option>
+                                        ))}
+                                    </SelectEstilo>
+
+                                    <InputEstilo
+                                        type="text"
+                                        name="periodo"
+                                        value={agendamento.periodo}
+                                        readOnly
+                                        placeholder="Período da vacina (dias)"
+                                    />
+                                </>
+                            )}
+
                             <InputEstilo
                                 type="date"
                                 name="data"
@@ -254,6 +299,7 @@ const Agendamentos: React.FC = () => {
                                 onChange={handleChange}
                                 required
                             />
+
                             <InputEstilo
                                 type="time"
                                 name="horario"
@@ -261,6 +307,7 @@ const Agendamentos: React.FC = () => {
                                 onChange={handleChange}
                                 required
                             />
+
                             <InputEstilo
                                 type="text"
                                 name="preco"
@@ -269,6 +316,7 @@ const Agendamentos: React.FC = () => {
                                 onChange={handleChange}
                                 required
                             />
+
                             <InputEstilo
                                 type="text"
                                 name="observacao"
@@ -279,10 +327,11 @@ const Agendamentos: React.FC = () => {
                             />
                         </GridCampos>
                     </FieldsetEstilo>
+
                     <BotaoSubmit
                         type="submit"
-                        disabled={!isFormValid || loading}
-                        isValid={isFormValid}
+                        disabled={!isFormValid() || loading}
+                        isValid={isFormValid()}
                         loading={loading}
                     >
                         {loading ? <div className="spinner" /> : "Agendar"}

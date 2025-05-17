@@ -22,7 +22,7 @@ const Pacientes: React.FC = () => {
             try {
                 const token = localStorage.getItem("authToken");
                 const response = await fetch(
-                    "http://127.0.0.1:8000/api/cadastro/animal/listar",
+                    "http://127.0.0.1:8000/api/cadastro/pet/listar",
                     {
                         method: "GET",
                         headers: {
@@ -41,7 +41,11 @@ const Pacientes: React.FC = () => {
         fetchAnimais();
     }, []);
 
-    const animaisFiltrados = animais.filter((animal) => animal.nome.toLowerCase().includes(search.toLowerCase()));
+    const animaisFiltrados = Array.isArray(animais)
+    ? animais.filter((animal) =>
+        animal.nome.toLowerCase().includes(search.toLowerCase())
+        )
+    : [];
     const totalPaginas = Math.ceil(animaisFiltrados.length / itensPorPagina);
     const indiceInicial = (paginaAtual - 1) * itensPorPagina;
     const indiceFinal = indiceInicial + itensPorPagina;
